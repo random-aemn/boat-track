@@ -45,9 +45,7 @@ class BoatIntegrationTest {
 		
 		if (bjr.findById(boatId).isPresent()) {
 			shadow = optShadow.get();
-			if (shadow.getBoatId() == boatId) {
-				testResult = true;
-			}
+
 		}
 		assertEquals(boat, shadow, "Persisted boat matches original boat definition.");
 
