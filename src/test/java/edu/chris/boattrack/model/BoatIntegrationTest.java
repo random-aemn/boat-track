@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
@@ -38,7 +39,7 @@ class BoatIntegrationTest {
     	for (int i=SN_HULL_BASE_VALUE; i<SN_HULL_BASE_VALUE+3; i++) {
     		BoatId boatId = new BoatId("SSN", ((Integer)i).toString());
     		Boat boat = new Boat(boatId, 80000 + i*100);
-    		bjr.save(boat);
+    		bjr.saveAndFlush(boat);
     		/*
     		 * 80000 + 700*100 = 80000 + 70000 = 150000
     		 * 150100
@@ -51,7 +52,7 @@ class BoatIntegrationTest {
     	for (int i=CG_HULL_BASE_VALUE; i<CG_HULL_BASE_VALUE+2; i++) {
     		BoatId boatId = new BoatId("CG", ((Integer)i).toString());
     		Boat boat = new Boat(boatId, 50000 + i*100);
-    		bjr.save(boat);
+    		bjr.saveAndFlush(boat);
     		/*
     		 * 50000 + 50*100 = 50000 + 5000 = 55000 
     		 * 55100
@@ -66,7 +67,7 @@ class BoatIntegrationTest {
     		/*
     		 * 10000 + 960*100 = 10000 + 96000 = 106000 
     		 */
-    		bjr.save(boat);
+    		bjr.saveAndFlush(boat);
     	}
     }
     
@@ -74,6 +75,7 @@ class BoatIntegrationTest {
     	createSubTestRecords();
     	createCgTestRecords();
     	createDdTestRecords();
+    	bjr.flush();
     	
     }
 
