@@ -86,7 +86,6 @@ class BoatIntegrationTest {
     }
     
 	@Test
-	@Transactional
 	void testBoatPersistanceAndRetrieval() {
 		createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
