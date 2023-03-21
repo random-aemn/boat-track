@@ -72,7 +72,6 @@ class BoatIntegrationTest {
 		createSubTestRecords();
 		createCgTestRecords();
 		createDdTestRecords();
-		bjr.flush();
 
 	}
 
@@ -80,22 +79,23 @@ class BoatIntegrationTest {
 
 	public static void init() {
 		restTemplate = new RestTemplate();
+		
 	}
 
 	@Test
 	void testBoatPersistanceAndRetrieval() {
 		createTestData();
-		BoatId boatId = new BoatId("SSN", "700");
-		Boat boat = new Boat(boatId, 150000);
+		BoatId boatId = new BoatId("SSN", "700"); 
+		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
 
-		Optional<Boat> optShadow = bjr.findById(boatId);
-		Boat shadow = null;
+		Optional<Boat> optStoredBoat = bjr.findById(boatId); //optStoredBoat is the boat that exists in the database
+		Boat retrievedBoat = null; 
 
 		if (bjr.findById(boatId).isPresent()) {
-			shadow = optShadow.get();
+			retrievedBoat = optStoredBoat.get();
 
 		}
-		assertEquals(boat, shadow, "Persisted boat matches original boat definition.");
+		assertEquals(localBoat, retrievedBoat, "Persisted boat matches original boat definition."); //checking if the boat created locally matches the boat information stored in the database
 
 	}
 
@@ -127,5 +127,33 @@ class BoatIntegrationTest {
 		}
 		assertEquals(0,expectedCount, "Expected and received an empty list.");
 	}
+	
+	@Test
+	void testUpdateBoatByBoatId() { // method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
+		createTestData();
+		/*
+		 *STEPS
+		 * create test data in the database
+		 * select a boat that exists in the database, using BoatId (which is boat class and hull number)
+		 * change local value of displacement
+		 * use the respository to save the new local value to the database
+		 * re-query the database to get the updated displacement
+		 * 
+		 * validate that the displacement was updated -- assertEquals(localValueDisplcement, int ActualDisplacementPulledFromDatabase, String "Expected and received matching displacements")
+		 * 
+		 */
+		
+	}
+	/* Homework
+	 * 
+	 * Test an update for a boat that exists
+	 * Test an update for a boat that does not exist
+	 * test a delete for a boat that exists
+	 * test a delete for a boat that does not exist
+	 * 
+	 * Read the book to find how JPA Update actually works -- ID is the key?
+	 * 
+	 *  ** May not be able to update displacement because it's final
+	 */
 
 }
