@@ -131,12 +131,28 @@ class BoatIntegrationTest {
 	@Test
 	void testUpdateBoatByBoatId() { // method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
 		createTestData();
+		BoatId boatId = new BoatId("SSN", "700"); //Create an instance of BoatId
+		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
+		
+		Optional<Boat> expectedBoat = bjr.findById(boatId); // get a boat from the database
+		localBoat = expectedBoat.get();
+		localBoat.setDisplacement(99999);
+		bjr.saveAndFlush(localBoat);
+		
+		Boat retrievedBoat = null;
+		
+		if(bjr.findById(boatId).isPresent()) {
+			retrievedBoat = expectedBoat.get();
+		
+		}
+		assertEquals(localBoat, retrievedBoat, "boat persisted in the databases matches changed displacement value of localBoat");
+		
 		/*
 		 *STEPS
 		 * create test data in the database
 		 * select a boat that exists in the database, using BoatId (which is boat class and hull number)
 		 * change local value of displacement
-		 * use the respository to save the new local value to the database
+		 * use the repository to save the new local value to the database
 		 * re-query the database to get the updated displacement
 		 * 
 		 * validate that the displacement was updated -- assertEquals(localValueDisplcement, int ActualDisplacementPulledFromDatabase, String "Expected and received matching displacements")

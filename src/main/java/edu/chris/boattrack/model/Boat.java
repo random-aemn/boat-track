@@ -34,9 +34,14 @@ public class Boat {
 	
 	@EmbeddedId
 	private final BoatId boatId;
-	private final int displacement;
-	
+	private int displacement;
 	
 
-
+	//Added a constructor that takes two arguments
+	public Boat(BoatId boatId, int displacement) {
+		//@EmbeddedId
+		this.boatId = boatId;
+		this.displacement = displacement;
+	}
 }
+
