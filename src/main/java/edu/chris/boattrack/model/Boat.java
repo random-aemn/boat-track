@@ -35,6 +35,8 @@ public class Boat {
 	@EmbeddedId
 	private final BoatId boatId;
 	private final int displacement;
+	private int apbVersion;
+	private int tiVersion;
 	
 	
 

@@ -125,7 +125,7 @@ class BoatIntegrationTest {
 		if (expectedBoatList.isPresent() ) {
 			expectedCount =  expectedBoatList.get().size();
 		}
-		assertEquals(0,expectedCount, "Expected and received an empty list.");
+		assertEquals(0,expectedCount);
 	}
 
 }
