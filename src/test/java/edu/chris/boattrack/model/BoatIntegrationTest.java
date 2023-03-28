@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import edu.chris.boattrack.model.id.BoatId;
 import edu.chris.boattrack.repository.BoatJpaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,6 +36,9 @@ class BoatIntegrationTest {
 	private static final int CG_HULL_BASE_VALUE = 50;
 	private static final int DD_HULL_BASE_VALUE = 960;
 
+	/*
+	 * method to create 3 SSN subs - Nuclear powered attack submarine
+	 */
 	private void createSubTestRecords() {
 		for (int i = SN_HULL_BASE_VALUE; i < SN_HULL_BASE_VALUE + 3; i++) {
 			BoatId boatId = new BoatId("SSN", ((Integer) i).toString());
@@ -46,6 +50,9 @@ class BoatIntegrationTest {
 		}
 	}
 
+	/*
+	 * method to create guided missile cruisers (CGs)
+	 */
 	private void createCgTestRecords() {
 		for (int i = CG_HULL_BASE_VALUE; i < CG_HULL_BASE_VALUE + 2; i++) {
 			BoatId boatId = new BoatId("CG", ((Integer) i).toString());
@@ -57,6 +64,10 @@ class BoatIntegrationTest {
 		}
 	}
 
+
+	/*
+	 * method to create destroyers 
+	 */
 	private void createDdTestRecords() {
 		for (int i = DD_HULL_BASE_VALUE; i < DD_HULL_BASE_VALUE + 1; i++) {
 			BoatId boatId = new BoatId("DD", ((Integer) i).toString());
@@ -67,7 +78,10 @@ class BoatIntegrationTest {
 			bjr.saveAndFlush(boat);
 		}
 	}
-
+	
+/*
+ * method that rolls up the previous methods to create the SSN, CG, and DD boat(s) for testing purposes
+ */
 	private void createTestData() {
 		createSubTestRecords();
 		createCgTestRecords();
@@ -82,6 +96,9 @@ class BoatIntegrationTest {
 		
 	}
 
+	/*
+	 * Test the ability of the JPA integration to create, save, and retrieve data to/from the database
+	 */
 	@Test
 	void testBoatPersistanceAndRetrieval() {
 		createTestData();
@@ -99,6 +116,9 @@ class BoatIntegrationTest {
 
 	}
 
+	/*
+	 * Find all the boats within a given ship class given data that is in the database
+	 */
 	@Test
 	void testFindByBoatClassForExistingData() {
 		createTestData();
@@ -108,6 +128,9 @@ class BoatIntegrationTest {
 		assertEquals(3, expectedBoatList.get().size(), "Expected count matched received count.");
 	}
 	
+	/*
+	 * find all the boats within a given boat class if you pass a ship class that does NOT exist
+	 */
 	@Test
 	void testFindByBoatClassForNoData() {
 		/*
@@ -128,48 +151,47 @@ class BoatIntegrationTest {
 		assertEquals(0,expectedCount, "Expected and received an empty list.");
 	}
 	
+	/*
+	 * method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
+	 */
 	@Test
-	void testUpdateBoatByBoatId() { // method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
-		createTestData();
-		BoatId boatId = new BoatId("SSN", "700"); //Create an instance of BoatId
-		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
+	void testUpdateBoatByBoatId() { 
 		
-		Optional<Boat> expectedBoat = bjr.findById(boatId); // get a boat from the database
-		localBoat = expectedBoat.get();
-		localBoat.setDisplacement(99999);
+		createTestData();
+		BoatId boatId = new BoatId("SSN", "700");
+		Boat localBoat = new Boat(boatId, 0);
 		bjr.saveAndFlush(localBoat);
 		
-		Boat retrievedBoat = null;
+		Boat expectedBoat = bjr.findById(boatId).get();
 		
-		if(bjr.findById(boatId).isPresent()) {
-			retrievedBoat = expectedBoat.get();
-		
-		}
-		assertEquals(localBoat, retrievedBoat, "boat persisted in the databases matches changed displacement value of localBoat");
-		
-		/*
-		 *STEPS
-		 * create test data in the database
-		 * select a boat that exists in the database, using BoatId (which is boat class and hull number)
-		 * change local value of displacement
-		 * use the repository to save the new local value to the database
-		 * re-query the database to get the updated displacement
-		 * 
-		 * validate that the displacement was updated -- assertEquals(localValueDisplcement, int ActualDisplacementPulledFromDatabase, String "Expected and received matching displacements")
-		 * 
-		 */
+		assertEquals(expectedBoat.getDisplacement(), localBoat.getDisplacement());
 		
 	}
-	/* Homework
-	 * 
-	 * Test an update for a boat that exists
-	 * Test an update for a boat that does not exist
-	 * test a delete for a boat that exists
-	 * test a delete for a boat that does not exist
-	 * 
-	 * Read the book to find how JPA Update actually works -- ID is the key?
-	 * 
-	 *  ** May not be able to update displacement because it's final
+	
+	/*
+	 * Testing the ability of JPA BoatIntegration to delete a boat that exists in the database
 	 */
+
+	@Test
+	void testDeleteBoatByBoatId() {
+		createTestData();
+		BoatId boatId = new BoatId("SSN", "700");
+		bjr.findById(boatId);
+		bjr.deleteById(boatId);
+		
+		Optional<Boat> expectedBoat = bjr.findById(boatId);
+		assertFalse(expectedBoat.isPresent());
+	}
+	
+	/*
+	 * Testing the ability of JPA BoatIntegration to delete a boat that does NOT exist in the database
+	 * 
+	 *  This cannot be effectively tested as Spring forces a checked exception to an
+	 * unchecked exception.  
+	 * If one will call the delete function - one MUST check that the boatId exists prior to calling 
+	 * the deleteById() function
+	 */
+
+
 
 }
