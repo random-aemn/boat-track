@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 	    }
 
 	    @Test                                               
-	    @DisplayName("Verify creation")   
+	    @DisplayName("Verify boat creation")   
 	    void testInstantiation() {
 	    	String expectedShipClass = boat.getBoatId().getShipClass();
 	    	String expectedHullNumber = boat.getBoatId().getHullNumber();
