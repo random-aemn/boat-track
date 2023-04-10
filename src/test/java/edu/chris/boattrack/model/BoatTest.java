@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 	    }
 
 	    @Test                                               
-	    @DisplayName("Verify creation")   
+	    @DisplayName("Verify boat creation")   
 	    void testInstantiation() {
 	    	String expectedShipClass = boat.getBoatId().getShipClass();
 	    	String expectedHullNumber = boat.getBoatId().getHullNumber();
@@ -34,6 +34,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 	        assertEquals("SSN-500", expectedId,     
 	                "Ship id should be SSN-500");  
 	    }
+	    
+	    /*
+	     * Test ability to change displacement
+	     */
+//	    @Test                                               
+//	    @DisplayName("Displacement change test")   
+//	    void testChangeDisplacement() {
+//	    }
+//	    
 
 //	    @RepeatedTest(5)                                    
 //	    @DisplayName("Ensure correct handling of zero")

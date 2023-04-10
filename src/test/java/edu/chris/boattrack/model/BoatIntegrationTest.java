@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import edu.chris.boattrack.model.id.BoatId;
 import edu.chris.boattrack.repository.BoatJpaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,6 +36,9 @@ class BoatIntegrationTest {
 	private static final int CG_HULL_BASE_VALUE = 50;
 	private static final int DD_HULL_BASE_VALUE = 960;
 
+	/*
+	 * method to create 3 SSN subs - Nuclear powered attack submarine
+	 */
 	private void createSubTestRecords() {
 		for (int i = SN_HULL_BASE_VALUE; i < SN_HULL_BASE_VALUE + 3; i++) {
 			BoatId boatId = new BoatId("SSN", ((Integer) i).toString());
@@ -46,6 +50,9 @@ class BoatIntegrationTest {
 		}
 	}
 
+	/*
+	 * method to create guided missile cruisers (CGs)
+	 */
 	private void createCgTestRecords() {
 		for (int i = CG_HULL_BASE_VALUE; i < CG_HULL_BASE_VALUE + 2; i++) {
 			BoatId boatId = new BoatId("CG", ((Integer) i).toString());
@@ -57,6 +64,10 @@ class BoatIntegrationTest {
 		}
 	}
 
+
+	/*
+	 * method to create destroyers 
+	 */
 	private void createDdTestRecords() {
 		for (int i = DD_HULL_BASE_VALUE; i < DD_HULL_BASE_VALUE + 1; i++) {
 			BoatId boatId = new BoatId("DD", ((Integer) i).toString());
@@ -67,12 +78,14 @@ class BoatIntegrationTest {
 			bjr.saveAndFlush(boat);
 		}
 	}
-
+	
+/*
+ * method that rolls up the previous methods to create the SSN, CG, and DD boat(s) for testing purposes
+ */
 	private void createTestData() {
 		createSubTestRecords();
 		createCgTestRecords();
 		createDdTestRecords();
-		bjr.flush();
 
 	}
 
@@ -80,25 +93,32 @@ class BoatIntegrationTest {
 
 	public static void init() {
 		restTemplate = new RestTemplate();
+		
 	}
 
+	/*
+	 * Test the ability of the JPA integration to create, save, and retrieve data to/from the database
+	 */
 	@Test
 	void testBoatPersistanceAndRetrieval() {
 		createTestData();
-		BoatId boatId = new BoatId("SSN", "700");
-		Boat boat = new Boat(boatId, 150000);
+		BoatId boatId = new BoatId("SSN", "700"); 
+		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
 
-		Optional<Boat> optShadow = bjr.findById(boatId);
-		Boat shadow = null;
+		Optional<Boat> optStoredBoat = bjr.findById(boatId); //optStoredBoat is the boat that exists in the database
+		Boat retrievedBoat = null; 
 
 		if (bjr.findById(boatId).isPresent()) {
-			shadow = optShadow.get();
+			retrievedBoat = optStoredBoat.get();
 
 		}
-		assertEquals(boat, shadow, "Persisted boat matches original boat definition.");
+		assertEquals(localBoat, retrievedBoat, "Persisted boat matches original boat definition."); //checking if the boat created locally matches the boat information stored in the database
 
 	}
 
+	/*
+	 * Find all the boats within a given ship class given data that is in the database
+	 */
 	@Test
 	void testFindByBoatClassForExistingData() {
 		createTestData();
@@ -108,6 +128,9 @@ class BoatIntegrationTest {
 		assertEquals(3, expectedBoatList.get().size(), "Expected count matched received count.");
 	}
 	
+	/*
+	 * find all the boats within a given boat class if you pass a ship class that does NOT exist
+	 */
 	@Test
 	void testFindByBoatClassForNoData() {
 		/*
@@ -127,5 +150,48 @@ class BoatIntegrationTest {
 		}
 		assertEquals(0,expectedCount);
 	}
+	
+	/*
+	 * method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
+	 */
+	@Test
+	void testUpdateBoatByBoatId() { 
+		
+		createTestData();
+		BoatId boatId = new BoatId("SSN", "700");
+		Boat localBoat = new Boat(boatId, 0);
+		bjr.saveAndFlush(localBoat);
+		
+		Boat expectedBoat = bjr.findById(boatId).get();
+		
+		assertEquals(expectedBoat.getDisplacement(), localBoat.getDisplacement());
+		
+	}
+	
+	/*
+	 * Testing the ability of JPA BoatIntegration to delete a boat that exists in the database
+	 */
+
+	@Test
+	void testDeleteBoatByBoatId() {
+		createTestData();
+		BoatId boatId = new BoatId("SSN", "700");
+		bjr.findById(boatId);
+		bjr.deleteById(boatId);
+		
+		Optional<Boat> expectedBoat = bjr.findById(boatId);
+		assertFalse(expectedBoat.isPresent());
+	}
+	
+	/*
+	 * Testing the ability of JPA BoatIntegration to delete a boat that does NOT exist in the database
+	 * 
+	 *  This cannot be effectively tested as Spring forces a checked exception to an
+	 * unchecked exception.  
+	 * If one will call the delete function - one MUST check that the boatId exists prior to calling 
+	 * the deleteById() function
+	 */
+
+
 
 }

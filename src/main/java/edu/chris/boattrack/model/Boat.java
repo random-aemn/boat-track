@@ -38,7 +38,15 @@ public class Boat {
 	private int apbVersion;
 	private int tiVersion;
 	
+
 	
 
-
+	//Added a constructor that takes two arguments
+	
+//	public Boat(BoatId boatId, int displacement) {
+//		//@EmbeddedId
+//		this.boatId = boatId;
+//		this.displacement = displacement;
+//	}
 }
+
