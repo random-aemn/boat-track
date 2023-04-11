@@ -35,13 +35,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 	                "Ship id should be SSN-500");  
 	    }
 	    
+	    
 	    /*
-	     * Test ability to change displacement
-	     */
-//	    @Test                                               
-//	    @DisplayName("Displacement change test")   
-//	    void testChangeDisplacement() {
-//	    }
+	     * Test to validate ability of boat to set displacement cannot be run because displacement is final
+	     * setters for variables with "final" modifier cannot be used
+	     **/
+	    
+	    /*
+	    @Test 
+	    @DisplayName("Successfully set boat displacement")
+	    void testSetDisplacement(){
+	    	Boat testBoat = new Boat();   	
+	    }
+	    */
+
+	    //Test ability for a boat to set apbVersion
+	    @Test
+	    @DisplayName("Verify setting of apbVersion")
+	    void testSetApbVersion() {	    	
+	    	boat.setApbVersion(12);
+	    	assertEquals(12, boat.getApbVersion(), "ship apbVersion should be 12"); 
+	
+	    }
+	    
+	    //Test ability for a boat to set tiVersion
+	    @Test
+	    @DisplayName("verify setting of tiVersion")
+	    void testSetTiVersion() {
+	    	boat.setTiVersion(22);
+	    	assertEquals(22, boat.getTiVersion(), "ship tiVersion should be 22");
+	    }
+
 //	    
 
 //	    @RepeatedTest(5)                                    
