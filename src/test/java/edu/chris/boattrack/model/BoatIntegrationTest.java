@@ -152,7 +152,7 @@ class BoatIntegrationTest {
 	}
 	
 	/*
-	 * method that will test the ability to update the displacement of a boat. The specific boat should be found using BoatId
+	 * method that will test the ability to get the displacement of a boat. The specific boat should be found using BoatId
 	 */
 	@Test
 	void testUpdateBoatByBoatId() { 
@@ -192,6 +192,54 @@ class BoatIntegrationTest {
 	 * the deleteById() function
 	 */
 
+	
+	
+	/*
+	 * Test the ability of a boat to set the apbVersion, save it to the database, and retrieve it
+	 */
+	@Test
+	void testUpdateApbVersion() {
+		createTestData();
+//****The code below causes an error where bytecode enhancement can't be done because of private constructors		
+		
+//		BoatId boatId = new BoatId("SSN", "700");
+//		Boat testBoat = new Boat(boatId, 0);
+//		testBoat.setApbVersion(22);
+//		bjr.saveAndFlush(testBoat);
+//		int testBoatApbVersion = testBoat.getApbVersion();
+//		int databaseBoatApbVersion = bjr.getReferenceById(boatId).getApbVersion();//getById is deprecated
+//		
+//		assertEquals(testBoatApbVersion, databaseBoatApbVersion); 
+
+		BoatId boatId = new BoatId("SSN", "700");
+		Boat localBoat = new Boat(boatId, 0);
+		localBoat.setApbVersion(22);
+		bjr.saveAndFlush(localBoat);
+		
+		Boat expectedBoat = bjr.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
+		
+		assertEquals(expectedBoat.getApbVersion(), localBoat.getApbVersion());
+	
+	}
+	
+	
+	/*
+	 * Test the ability of a boat to set the tiVersion, save it to the database, and retrieve it
+	 */
+	@Test
+	void testUpdateTiVersion() {
+		createTestData();
+		BoatId boatId = new BoatId("SSN", "700");
+		Boat localBoat = new Boat(boatId, 0);
+		localBoat.setTiVersion(87);;
+		bjr.saveAndFlush(localBoat);
+		
+		Boat expectedBoat = bjr.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
+		
+		assertEquals(expectedBoat.getTiVersion(), localBoat.getTiVersion());
+		
+	}
+	
 
 
 }
