@@ -27,20 +27,20 @@ class BoatController {
   // Aggregate root
   // tag::get-aggregate-root[]
   @GetMapping("/boatlist")
-  List<Boat> all() {
+  List<Boat> getAll() {
     return repository.findAll();
   }
   // end::get-aggregate-root[]
 
   @PostMapping("/boat")
-  Boat newEmployee(@RequestBody Boat newBoat) {
+  Boat newBoat(@RequestBody Boat newBoat) {
     return repository.save(newBoat);
   }
 
   // Single item
   
   @GetMapping("/boat/{id}")
-  Boat one(@PathVariable BoatId id) {
+  Boat getOne(@PathVariable BoatId id) {
 
     return repository.findById(id).orElseThrow(() -> new BoatNotFoundException(id));
   }

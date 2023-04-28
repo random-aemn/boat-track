@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
+import edu.chris.boattrack.BoatTestData;
 import edu.chris.boattrack.model.id.BoatId;
 import edu.chris.boattrack.repository.BoatJpaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,71 +24,76 @@ import jakarta.transaction.Transactional;
 class BoatIntegrationTest {
 
 	@Autowired
-	BoatJpaRepository bjr;
+	BoatJpaRepository bjrTwo;
 
 	@LocalServerPort
 	private int port;
 
 	private String baseUrl = "http://localhost";
 
+	BoatTestData tester = new BoatTestData();
+	
+	
 	private static RestTemplate restTemplate = null;
 
-	private static final int SN_HULL_BASE_VALUE = 700;
-	private static final int CG_HULL_BASE_VALUE = 50;
-	private static final int DD_HULL_BASE_VALUE = 960;
-
-	/*
-	 * method to create 3 SSN subs - Nuclear powered attack submarine
-	 */
-	private void createSubTestRecords() {
-		for (int i = SN_HULL_BASE_VALUE; i < SN_HULL_BASE_VALUE + 3; i++) {
-			BoatId boatId = new BoatId("SSN", ((Integer) i).toString());
-			Boat boat = new Boat(boatId, 80000 + i * 100);
-			bjr.saveAndFlush(boat);
-			/*
-			 * 80000 + 700*100 = 80000 + 70000 = 150000 150100 150200
-			 */
-		}
-	}
-
-	/*
-	 * method to create guided missile cruisers (CGs)
-	 */
-	private void createCgTestRecords() {
-		for (int i = CG_HULL_BASE_VALUE; i < CG_HULL_BASE_VALUE + 2; i++) {
-			BoatId boatId = new BoatId("CG", ((Integer) i).toString());
-			Boat boat = new Boat(boatId, 50000 + i * 100);
-			bjr.saveAndFlush(boat);
-			/*
-			 * 50000 + 50*100 = 50000 + 5000 = 55000 55100
-			 */
-		}
-	}
-
-
-	/*
-	 * method to create destroyers 
-	 */
-	private void createDdTestRecords() {
-		for (int i = DD_HULL_BASE_VALUE; i < DD_HULL_BASE_VALUE + 1; i++) {
-			BoatId boatId = new BoatId("DD", ((Integer) i).toString());
-			Boat boat = new Boat(boatId, 10000 + i * 100);
-			/*
-			 * 10000 + 960*100 = 10000 + 96000 = 106000
-			 */
-			bjr.saveAndFlush(boat);
-		}
-	}
-	
-/*
- * method that rolls up the previous methods to create the SSN, CG, and DD boat(s) for testing purposes
- */
-	private void createTestData() {
-		createSubTestRecords();
-		createCgTestRecords();
-		createDdTestRecords();
-
-	}
+//	private static final int SN_HULL_BASE_VALUE = 700;
+//	private static final int CG_HULL_BASE_VALUE = 50;
+//	private static final int DD_HULL_BASE_VALUE = 960;
+//
+//	/*
+//	 * method to create 3 SSN subs - Nuclear powered attack submarine
+//	 */
+//	
+//
+//	private void createSubTestRecords() {
+//		for (int i = SN_HULL_BASE_VALUE; i < SN_HULL_BASE_VALUE + 3; i++) {
+//			BoatId boatId = new BoatId("SSN", ((Integer) i).toString());
+//			Boat boat = new Boat(boatId, 80000 + i * 100);
+//			bjr.saveAndFlush(boat);
+//			/*
+//			 * 80000 + 700*100 = 80000 + 70000 = 150000 150100 150200
+//			 */
+//		}
+//	}
+//
+//	/*
+//	 * method to create guided missile cruisers (CGs)
+//	 */
+//	private void createCgTestRecords() {
+//		for (int i = CG_HULL_BASE_VALUE; i < CG_HULL_BASE_VALUE + 2; i++) {
+//			BoatId boatId = new BoatId("CG", ((Integer) i).toString());
+//			Boat boat = new Boat(boatId, 50000 + i * 100);
+//			bjr.saveAndFlush(boat);
+//			/*
+//			 * 50000 + 50*100 = 50000 + 5000 = 55000 55100
+//			 */
+//		}
+//	}
+//
+//
+//	/*
+//	 * method to create destroyers 
+//	 */
+//	private void createDdTestRecords() {
+//		for (int i = DD_HULL_BASE_VALUE; i < DD_HULL_BASE_VALUE + 1; i++) {
+//			BoatId boatId = new BoatId("DD", ((Integer) i).toString());
+//			Boat boat = new Boat(boatId, 10000 + i * 100);
+//			/*
+//			 * 10000 + 960*100 = 10000 + 96000 = 106000
+//			 */
+//			bjr.saveAndFlush(boat);
+//		}
+//	}
+//	
+///*
+// * method that rolls up the previous methods to create the SSN, CG, and DD boat(s) for testing purposes
+// */
+//	private void createTestData() {
+//		createSubTestRecords();
+//		createCgTestRecords();
+//		createDdTestRecords();
+//
+//	}
 
 	@BeforeAll
 
@@ -101,14 +107,17 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testBoatPersistanceAndRetrieval() {
-		createTestData();
+		//BoatTestData tester = new BoatTestData();
+		tester.createTestData();
+		bjrTwo.saveAllAndFlush(tester.createTestData()); // CHECK -- Not sure why all the tests are passing if I only save the test data to the database within this ONE test method
+		
 		BoatId boatId = new BoatId("SSN", "700"); 
 		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
 
-		Optional<Boat> optStoredBoat = bjr.findById(boatId); //optStoredBoat is the boat that exists in the database
+		Optional<Boat> optStoredBoat = bjrTwo.findById(boatId); //optStoredBoat is the boat that exists in the database
 		Boat retrievedBoat = null; 
 
-		if (bjr.findById(boatId).isPresent()) {
+		if (bjrTwo.findById(boatId).isPresent()) {
 			retrievedBoat = optStoredBoat.get();
 
 		}
@@ -121,9 +130,9 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testFindByBoatClassForExistingData() {
-		createTestData();
+		tester.createTestData();
 
-		Optional<List<Boat>> expectedBoatList = bjr.findByBoatIdShipClass("SSN");
+		Optional<List<Boat>> expectedBoatList = bjrTwo.findByBoatIdShipClass("SSN");
 
 		assertEquals(3, expectedBoatList.get().size(), "Expected count matched received count.");
 	}
@@ -141,10 +150,10 @@ class BoatIntegrationTest {
 		 * Moral:  isPresent is not sufficient.  Check the size of the list
 		 * to determine if data has been returned.
 		 */
-		createTestData();
+		tester.createTestData();
 		int expectedCount = 0;
 
-		Optional<List<Boat>> expectedBoatList = bjr.findByBoatIdShipClass("x");
+		Optional<List<Boat>> expectedBoatList = bjrTwo.findByBoatIdShipClass("x");
 		if (expectedBoatList.isPresent() ) {
 			expectedCount =  expectedBoatList.get().size();
 		}
@@ -157,12 +166,12 @@ class BoatIntegrationTest {
 	@Test
 	void testUpdateBoatByBoatId() { 
 		
-		createTestData();
+		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
 		Boat localBoat = new Boat(boatId, 0);
-		bjr.saveAndFlush(localBoat);
+		bjrTwo.saveAndFlush(localBoat);
 		
-		Boat expectedBoat = bjr.findById(boatId).get();
+		Boat expectedBoat = bjrTwo.findById(boatId).get();
 		
 		assertEquals(expectedBoat.getDisplacement(), localBoat.getDisplacement());
 		
@@ -174,12 +183,12 @@ class BoatIntegrationTest {
 
 	@Test
 	void testDeleteBoatByBoatId() {
-		createTestData();
+		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
-		bjr.findById(boatId);
-		bjr.deleteById(boatId);
+		bjrTwo.findById(boatId);
+		bjrTwo.deleteById(boatId);
 		
-		Optional<Boat> expectedBoat = bjr.findById(boatId);
+		Optional<Boat> expectedBoat = bjrTwo.findById(boatId);
 		assertFalse(expectedBoat.isPresent());
 	}
 	
@@ -199,7 +208,7 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testUpdateApbVersion() {
-		createTestData();
+		tester.createTestData();
 //****The code below causes an error where bytecode enhancement can't be done because of private constructors		
 		
 //		BoatId boatId = new BoatId("SSN", "700");
@@ -214,9 +223,9 @@ class BoatIntegrationTest {
 		BoatId boatId = new BoatId("SSN", "700");
 		Boat localBoat = new Boat(boatId, 0);
 		localBoat.setApbVersion(22);
-		bjr.saveAndFlush(localBoat);
+		bjrTwo.saveAndFlush(localBoat);
 		
-		Boat expectedBoat = bjr.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
+		Boat expectedBoat = bjrTwo.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
 		
 		assertEquals(expectedBoat.getApbVersion(), localBoat.getApbVersion());
 	
@@ -228,13 +237,13 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testUpdateTiVersion() {
-		createTestData();
+		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
 		Boat localBoat = new Boat(boatId, 0);
 		localBoat.setTiVersion(87);;
-		bjr.saveAndFlush(localBoat);
+		bjrTwo.saveAndFlush(localBoat);
 		
-		Boat expectedBoat = bjr.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
+		Boat expectedBoat = bjrTwo.findById(boatId).get(); //getById is deprecated, so we use both find AND get methods
 		
 		assertEquals(expectedBoat.getTiVersion(), localBoat.getTiVersion());
 		
