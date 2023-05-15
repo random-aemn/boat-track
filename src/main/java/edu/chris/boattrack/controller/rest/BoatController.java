@@ -1,6 +1,9 @@
 package edu.chris.boattrack.controller.rest;
 
 import java.util.List;
+
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +19,8 @@ import edu.chris.boattrack.exception.BoatNotFoundException;
 
 @RestController
 class BoatController {
+	
+	private final Log log = LogFactory.getLog(getClass());
 
   private final BoatJpaRepository repository;
 
@@ -41,7 +46,8 @@ class BoatController {
   
   @GetMapping("/boat/{id}")
   Boat getOne(@PathVariable BoatId id) {
-
+	  log.info("I got a make believe boat " + id.toString());
+	  
     return repository.findById(id).orElseThrow(() -> new BoatNotFoundException(id));
   }
 

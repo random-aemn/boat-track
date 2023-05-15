@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -36,70 +37,17 @@ class BoatIntegrationTest {
 	
 	private static RestTemplate restTemplate = null;
 
-//	private static final int SN_HULL_BASE_VALUE = 700;
-//	private static final int CG_HULL_BASE_VALUE = 50;
-//	private static final int DD_HULL_BASE_VALUE = 960;
-//
-//	/*
-//	 * method to create 3 SSN subs - Nuclear powered attack submarine
-//	 */
-//	
-//
-//	private void createSubTestRecords() {
-//		for (int i = SN_HULL_BASE_VALUE; i < SN_HULL_BASE_VALUE + 3; i++) {
-//			BoatId boatId = new BoatId("SSN", ((Integer) i).toString());
-//			Boat boat = new Boat(boatId, 80000 + i * 100);
-//			bjr.saveAndFlush(boat);
-//			/*
-//			 * 80000 + 700*100 = 80000 + 70000 = 150000 150100 150200
-//			 */
-//		}
-//	}
-//
-//	/*
-//	 * method to create guided missile cruisers (CGs)
-//	 */
-//	private void createCgTestRecords() {
-//		for (int i = CG_HULL_BASE_VALUE; i < CG_HULL_BASE_VALUE + 2; i++) {
-//			BoatId boatId = new BoatId("CG", ((Integer) i).toString());
-//			Boat boat = new Boat(boatId, 50000 + i * 100);
-//			bjr.saveAndFlush(boat);
-//			/*
-//			 * 50000 + 50*100 = 50000 + 5000 = 55000 55100
-//			 */
-//		}
-//	}
-//
-//
-//	/*
-//	 * method to create destroyers 
-//	 */
-//	private void createDdTestRecords() {
-//		for (int i = DD_HULL_BASE_VALUE; i < DD_HULL_BASE_VALUE + 1; i++) {
-//			BoatId boatId = new BoatId("DD", ((Integer) i).toString());
-//			Boat boat = new Boat(boatId, 10000 + i * 100);
-//			/*
-//			 * 10000 + 960*100 = 10000 + 96000 = 106000
-//			 */
-//			bjr.saveAndFlush(boat);
-//		}
-//	}
-//	
-///*
-// * method that rolls up the previous methods to create the SSN, CG, and DD boat(s) for testing purposes
-// */
-//	private void createTestData() {
-//		createSubTestRecords();
-//		createCgTestRecords();
-//		createDdTestRecords();
-//
-//	}
-
 	@BeforeAll
 
 	public static void init() {
 		restTemplate = new RestTemplate();
 		
+	}
+	@BeforeEach
+	void manufactureData() {
+		tester.createTestData();
+		//bjrTwo.saveAllAndFlush(tester.createTestData()); // CHECK -- Not sure why all the tests are passing if I only save the test data to the database within this ONE test method
+		bjrTwo.saveAll(tester.createTestData());
 	}
 
 	/*
@@ -108,9 +56,7 @@ class BoatIntegrationTest {
 	@Test
 	void testBoatPersistanceAndRetrieval() {
 		//BoatTestData tester = new BoatTestData();
-		tester.createTestData();
-		bjrTwo.saveAllAndFlush(tester.createTestData()); // CHECK -- Not sure why all the tests are passing if I only save the test data to the database within this ONE test method
-		
+
 		BoatId boatId = new BoatId("SSN", "700"); 
 		Boat localBoat = new Boat(boatId, 150000); // create a boat with information that I KNOW exists
 
@@ -130,7 +76,7 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testFindByBoatClassForExistingData() {
-		tester.createTestData();
+//		tester.createTestData();
 
 		Optional<List<Boat>> expectedBoatList = bjrTwo.findByBoatIdShipClass("SSN");
 
@@ -150,7 +96,7 @@ class BoatIntegrationTest {
 		 * Moral:  isPresent is not sufficient.  Check the size of the list
 		 * to determine if data has been returned.
 		 */
-		tester.createTestData();
+//		tester.createTestData();
 		int expectedCount = 0;
 
 		Optional<List<Boat>> expectedBoatList = bjrTwo.findByBoatIdShipClass("x");
@@ -166,7 +112,7 @@ class BoatIntegrationTest {
 	@Test
 	void testUpdateBoatByBoatId() { 
 		
-		tester.createTestData();
+//		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
 		Boat localBoat = new Boat(boatId, 0);
 		bjrTwo.saveAndFlush(localBoat);
@@ -183,7 +129,7 @@ class BoatIntegrationTest {
 
 	@Test
 	void testDeleteBoatByBoatId() {
-		tester.createTestData();
+//		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
 		bjrTwo.findById(boatId);
 		bjrTwo.deleteById(boatId);
@@ -208,7 +154,7 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testUpdateApbVersion() {
-		tester.createTestData();
+//		tester.createTestData();
 //****The code below causes an error where bytecode enhancement can't be done because of private constructors		
 		
 //		BoatId boatId = new BoatId("SSN", "700");
@@ -237,7 +183,7 @@ class BoatIntegrationTest {
 	 */
 	@Test
 	void testUpdateTiVersion() {
-		tester.createTestData();
+//		tester.createTestData();
 		BoatId boatId = new BoatId("SSN", "700");
 		Boat localBoat = new Boat(boatId, 0);
 		localBoat.setTiVersion(87);;

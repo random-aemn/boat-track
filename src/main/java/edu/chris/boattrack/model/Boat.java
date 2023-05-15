@@ -1,6 +1,7 @@
 package edu.chris.boattrack.model;
 
 import edu.chris.boattrack.model.id.BoatId;
+import jakarta.persistence.Convert;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import lombok.Data;
@@ -32,6 +33,7 @@ import lombok.AccessLevel;
  */
 public class Boat {
 	
+	//@Convert(converter = BoatIdConverter.class)
 	@EmbeddedId
 	private final BoatId boatId;
 	private final int displacement;
