@@ -1,9 +1,11 @@
 package edu.chris.boattrack.controller.rest;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,12 @@ class BoatController {
     return repository.findAll();
   }
   // end::get-aggregate-root[]
+  
+  @GetMapping(path = "/boattestmsg", produces = MediaType.APPLICATION_JSON_VALUE)
+  String testMessage() {
+	  Instant now = Instant.now();
+	  return "boattestmsg success at " + now;
+  }
 
   @PostMapping("/boat")
   Boat newBoat(@RequestBody Boat newBoat) {
