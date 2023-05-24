@@ -1,7 +1,9 @@
 package edu.chris.boattrack.controller.rest;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -39,10 +41,15 @@ class BoatController {
   }
   // end::get-aggregate-root[]
   
-  @GetMapping(path = "/boattestmsg", produces = MediaType.APPLICATION_JSON_VALUE)
-  String testMessage() {
+//  @GetMapping(path = "/boattestmsg", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(path="/boattrack/v0.0/boat-test-message")
+//  /boattrack/v0.0/boat-test-message
+  Map testMessage() {
 	  Instant now = Instant.now();
-	  return "boattestmsg success at " + now;
+	  Map<String, String> map = new HashMap<String, String>();
+	  map.put("msg", "boattestmsg success");
+	  map.put("time", now.toString());
+	  return map;
   }
 
   @PostMapping("/boat")
