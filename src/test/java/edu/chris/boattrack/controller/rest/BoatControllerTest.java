@@ -14,8 +14,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
 import edu.chris.boattrack.BoatTestData;
+import edu.chris.boattrack.BoatTrackApplication;
 import edu.chris.boattrack.model.Boat;
-@SpringBootTest
+@SpringBootTest (classes = BoatTrackApplication.class, 
+webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BoatControllerTest {
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -55,7 +57,6 @@ this.restTemplate.getForObject("http://localhost:" + port + "/boattrack/v0.0/boa
 
 //	@Test
 //	void testGetAll() {
-//		BoatController controller = new BoatController(null);
 //		
 //		fail("Not yet implemented");
 //	}

@@ -1,4 +1,4 @@
-package edu.chris.boattrack.controller.rest;
+ package edu.chris.boattrack.controller.rest;
 
 import java.util.List;
 
