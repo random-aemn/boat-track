@@ -1,4 +1,4 @@
-package rest.integration;
+package edu.chris.boattrack.controller.rest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,7 +25,7 @@ import edu.chris.boattrack.BoatTrackApplication;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = BoatTrackApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FredTest {
+public class StaticMessageTest {
 	@LocalServerPort
 	private int port;
 
@@ -34,20 +34,24 @@ public class FredTest {
 	HttpHeaders headers = new HttpHeaders();
 
 	@Test
+	/**
+	 * Invoke "/bt/v1/boat-test-message" which is processed by BoatController.testMessage
+	 * The invoked endpoint should return a static method with a varying time stamp 
+	 * This test will verify the msg portion of the JSON payload; it will ignore the time portion of the JSON payload
+	 * 
+	 * @throws JSONException
+	 */
 	public void testBasicMessage() throws JSONException {
 
 		HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
-		ResponseEntity<String> response = restTemplate.exchange(createURLWithPort("/boattrack/v0.0/boat-test-message"),
+		ResponseEntity<String> response = restTemplate.exchange(createURLWithPort(TestEndpoints.STATIC_EP),
 				HttpMethod.GET, entity, String.class);
 
-//        String expected = "{\"id\":\"Course1\",\"name\":\"Spring\",\"description\":\"10 Steps\"}";
-//        String expected = "{msg=boattestmsg success, time=2023-05-24T15:52:28.291356800Z}";
 		String expected = "{\"msg\":\"boattestmsg success\",\"time\":\"2023-05-24T01:09:11.032025800Z\"}";
 
 		JSONAssert.assertEquals(expected, response.getBody().toString(),
-				new CustomComparator(JSONCompareMode.STRICT, Customization.customization("time", // json path you want
-																									// to customize
+				new CustomComparator(JSONCompareMode.STRICT, Customization.customization("time", //  this CustomComparator will cause the "time" field to be ignored
 						new ValueMatcher() {
 							@Override
 							public boolean equal(Object o1, Object o2) {
@@ -58,5 +62,6 @@ public class FredTest {
 
 	private String createURLWithPort(String uri) {
 		return "http://localhost:" + port + uri;
+	
 	}
 }
