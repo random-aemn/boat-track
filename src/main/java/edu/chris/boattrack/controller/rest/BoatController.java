@@ -43,7 +43,7 @@ class BoatController {
   
 //  @GetMapping(path = "/boattestmsg", produces = MediaType.APPLICATION_JSON_VALUE)
   @GetMapping(path="/boat-test-message")
-//  /boattrack/v0.0/boat-test-message
+//  bt/v1/boat-test-message
   Map testMessage() {
 	  Instant now = Instant.now();
 	  Map<String, String> map = new HashMap<String, String>();
