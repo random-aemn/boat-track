@@ -28,7 +28,7 @@ class BoatControllerTest {
 	private int port;
 
 	//@Autowired
-	private TestRestTemplate restTemplate;
+	private TestRestTemplate trt;
 	@Test
 	public void contextLoads() {
 		assertThat(controller).isNotNull();
@@ -37,15 +37,21 @@ class BoatControllerTest {
 
 
 	@Test
-	public void greetingShouldReturnDefaultMessage() throws Exception {
-		restTemplate = new TestRestTemplate();
+	public void getNonExistentBoat() throws Exception {
+		trt = new TestRestTemplate();
 		//http://localhost:8080/boattrack/v0.0/boat/cg-52
 		log.info("port is: " + port);
-		String response = 
-this.restTemplate.getForObject("http://localhost:" + port + "/boattrack/v0.0/boat/SSN-700" , String.class);
-		String res=(response==null) ? "Response is null" : response;
+		ResponseEntity <String> response = 
+this.trt.getForEntity("http://localhost:" + port + TestEndpoints.NO_SUCH_BOAT_EP , String.class);
+		String res=(response==null) ? "Response is null" : response.getBody(); //if response is null, return null; else String res gets response
 		log.info(res);
 		fail("Not yet implemented");
+		/*
+		 * assert that I expect a 404 error - compare against the return code
+		 * 
+		 */
+		int expectedRC = 404;
+		int actualRC = response.getStatusCode().value();
 	}
 	
 	@BeforeAll
@@ -54,15 +60,18 @@ this.restTemplate.getForObject("http://localhost:" + port + "/boattrack/v0.0/boa
 		tester.createTestData();
 
 	}
-
+	
+	/*
+	 * THE NEXT TEST TO WRITE
+	 */
+//	@Test
+//	void testNewBoat() { 
+//		fail("Not yet implemented");
+//	}
+	
 //	@Test
 //	void testGetAll() {
 //		
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	void testNewBoat() {
 //		fail("Not yet implemented");
 //	}
 //
