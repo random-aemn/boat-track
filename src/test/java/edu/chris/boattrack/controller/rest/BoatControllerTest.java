@@ -46,7 +46,6 @@ class BoatControllerTest {
 	@Test
 	public void getNonExistentBoat() throws Exception {
 		trt = new TestRestTemplate();
-		//http://localhost:8080/bt/v1/boat/cg-52
 		log.info("port is: " + port);
 		ResponseEntity <String> response = 
 this.trt.getForEntity("http://localhost:" + port + TestEndpoints.NO_SUCH_BOAT_EP , String.class);
@@ -58,7 +57,7 @@ this.trt.getForEntity("http://localhost:" + port + TestEndpoints.NO_SUCH_BOAT_EP
 		assertEquals(expectedRC, actualRC);
 	}
 	/*
-	 * Create test data for remaining tests
+	 * Creates test data for remaining tests
 	 */
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -71,19 +70,25 @@ this.trt.getForEntity("http://localhost:" + port + TestEndpoints.NO_SUCH_BOAT_EP
 	@Test	
 	void testNewBoat() throws URISyntaxException { 
 		trt = new TestRestTemplate();
-		final String baseUrl = "http://localhost:" + port + "/bt/v1/"; // base URL to issue the post
+		
+		final String baseUrl = "http://localhost:" + port + TestEndpoints.ADD_NEW_BOAT_EP; // base URL to issue the post
 		URI uri = new URI(baseUrl);
 		BoatId boatId = new BoatId("CGC", "777"); //create a boatId 
-		Boat newBoat = new Boat(boatId, 777000); //instantiate a boat to post
+		Boat boat = new Boat(boatId, 777000); //instantiate a boat to post
 		
 		HttpHeaders headers = new HttpHeaders(); // Don't understand what I'm doing in this or the following line or what the arguments denote in headers.set
 		headers.set("X-COM-PERSIST", "true");
 		
-		HttpEntity<Boat> request = new HttpEntity<>(newBoat, headers); //creates new HttpEntity with a body and headers
-		log.info("The HttpEntity request is: " + request);
+	//	HttpEntity<Boat> request = new HttpEntity<>(newBoat, headers); //creates new HttpEntity with a body and headers
+		HttpEntity<Boat> requestTwo = new HttpEntity<>(boat);
+		log.info("The HttpEntity request is: " + requestTwo);
 		
+//		ResponseEntity<String> response = 
+//		this.trt.postForEntity(uri, requestTwo, null);
+//		String res=(response==null) ? "Response is null" : response.getBody(); //if response is null, return null; else String res gets response
+//		log.info(res);
 		
-		ResponseEntity<String> result = this.trt.postForEntity(uri, request, String.class);
+		ResponseEntity<String> result = this.trt.postForEntity(uri, requestTwo, String.class);
 		log.info(result);
 		log.info(result.getStatusCode().value());
 		assertEquals(201, result.getStatusCode().value());
