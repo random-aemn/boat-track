@@ -25,6 +25,9 @@ public class BoatId implements Serializable {
         this.hullNumber = hullNumber;
     }
 
+//  public BoatId() {
+//	  super();
+//  }
 
     /*
      *  getters, equals() and hashCode() methods created by Lombok @Data annotation

@@ -1,6 +1,9 @@
 package edu.chris.boattrack.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import edu.chris.boattrack.model.id.BoatId;
+import edu.chris.boattrack.model.id.converter.StringToBoatIdConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -35,6 +38,7 @@ public class Boat {
 	
 	//@Convert(converter = BoatIdConverter.class)
 	@EmbeddedId
+	//@JsonDeserialize(converter= StringToBoatIdConverter.class) Trying to figure out how to get JSON to map
 	private final BoatId boatId;
 	private final int displacement;
 	private int apbVersion;
