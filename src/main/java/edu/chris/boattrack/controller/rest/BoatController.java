@@ -145,8 +145,9 @@ class BoatController {
  * before the SQL is issued
  */
   @DeleteMapping("/boat/{id}") 
-  void deleteBoat(@PathVariable BoatId id) {
+  void deleteBoat(@PathVariable BoatId id) {	  
     repository.deleteById(id);
+    
   }
   
   
